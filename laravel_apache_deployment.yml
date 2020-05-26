@@ -1,0 +1,109 @@
+---
+- name: Despliegue de aplicacion Laravel con mysqldb
+  hosts: webserverlaravel
+  become: yes
+  tasks:
+          - name: Instalar paquetes con apt
+            apt:
+                    name:
+                            - apache2
+                            - mysql-server
+                            - mysql-client
+                            - php7.2-fpm
+                            - php7.2-mysql
+                            - php7.2-mbstring
+                            - php7.2-curl
+                            - php7.2-dom
+                            - python3-pip
+                            - libmysqlclient-dev
+                            - composer
+                    update_cache: yes
+
+          - name: Descargar libreria de apache
+            get_url:
+                    url: http://mirrors.kernel.org/ubuntu/pool/multiverse/liba/libapache-mod-fastcgi/libapache2-mod-fastcgi_2.4.7~0910052141-1.2_amd64.deb
+                    dest: /tmp/libapache2-mod-fastcgi_2.4.7~0910052141-1.2_amd64.deb
+
+          - name: Instalar libreria de apache
+            shell: dpkg -i /tmp/libapache2-mod-fastcgi_2.4.7~0910052141-1.2_amd64.deb
+
+          - name: Ejecutar a2enmod
+            shell: a2enmod actions
+
+          - name: Configurar php con apache
+            shell: cp /repos/laravel-apache-conf/php-fpm.conf /etc/apache2/conf-available/php-fpm.conf
+
+          - name: Ejecutar a2enmod
+            shell: a2enconf php-fpm
+
+          - name: Clonar repositorio de proyecto a /var/www/html
+            git:
+                    repo: https://github.com/friedteeth/doggos.git
+                    dest: /var/www/html/doggos
+                    force: yes
+
+          - name: Otorgar permisos a apache
+            shell:
+                    cmd: chmod -R guo+w *
+                    chdir: /var/www/html/doggos/
+
+          - name: CLonar repo con configuracion para apache
+            git:
+                    repo: https://github.com/friedteeth/laravel-apache-conf.git
+                    dest: /repos/laravel-apache-conf
+                    force: yes
+
+          - name: Instala dependencia para el modulo mysql_db
+            pip:
+                    name: PyMySQL
+
+          - name: Instala dependencias del proyecto usando composer
+            composer:
+                    working_dir: /var/www/html/doggos
+
+          - name: Crea base de datos
+            mysql_db:
+                    name: doggos
+                    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+          - name: Crea usuario de mysql y otorga permisos para base de datos
+            mysql_user:
+                    name: dog
+                    password: doggos1234@
+                    priv: 'doggos.*:ALL'
+                    login_unix_socket: /var/run/mysqld/mysqld.sock
+            no_log: true
+
+          - name: Corre migraciones
+            shell:
+                    chdir: /var/www/html/doggos
+                    cmd: php artisan migrate
+
+          - name: Configura el proyecto de laravel
+            shell:
+                    chdir: /var/www/html/doggos
+                    cmd: cp .env.example .env
+
+          - name: Genera llave de acceso
+            shell:
+                    chdir: /var/www/html/doggos
+                    cmd: php artisan key:generate
+
+          - name: Limpia cache
+            shell:
+                    chdir: /var/www/html/doggos
+                    cmd: php artisan config:cache
+
+          - name: Concatena configuracion de apache a archivo de configuracion de apache
+            shell: cat /repos/laravel-apache-conf/000-default.conf > /etc/apache2/sites-available/000-default.conf
+            notify: Reiniciar apache
+
+          - name: Reinicia configuracion de a2enmod
+            shell: a2enmod rewrite
+
+  handlers:
+
+          - name: Reiniciar apache
+            service:
+                    name: apache2
+                    state: restarted

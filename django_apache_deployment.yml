@@ -1,0 +1,75 @@
+---
+- name: Despliegue de aplicacion Django con MariaDB
+  hosts: webserver
+  become: yes
+  tasks:
+          - name: Instalar paquetes con apt
+            apt:
+                    name:
+                            - apache2
+                            - mysql-server
+                            - python3-dev
+                            - python3-pip
+                            - libmysqlclient-dev
+                            - virtualenv
+                            - git
+                            - libapache2-mod-wsgi-py3
+                    update_cache: yes
+
+          - name: Clonar repositorio de proyecto
+            git:
+                    repo: https://github.com/friedteeth/scatuaz.git
+                    dest: /repos/scatuaz
+                    force: yes
+
+          - name: Instala dependencia para el modulo mysql_db
+            pip:
+                    name: PyMySQL
+
+          - name: Crea entorno virtual e instala requerimientos
+            pip:
+                    requirements: /repos/scatuaz/requirements.txt
+                    virtualenv: /envs/scatuaz
+
+          - name: Crea base de datos
+            mysql_db:
+                    name: scatuaz
+                    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+          - name: Crea usuario de mysql y otorga permisos para base de datos
+            mysql_user:
+                    name: tigrito
+                    password: tigrito123@
+                    priv: 'scatuaz.*:ALL'
+                    login_unix_socket: /var/run/mysqld/mysqld.sock
+            no_log: true
+
+          - name: Convierte manage.py en ejecutable
+            file:
+                    path: /repos/scatuaz/manage.py
+                    mode: 0777
+
+          - name: Corre migraciones de Django app
+            django_manage:
+                    command: migrate
+                    app_path: /repos/scatuaz
+                    virtualenv: /envs/scatuaz
+
+          - name: Clonar repo con configuracion para apache
+            git:
+                    name: https://github.com/friedteeth/apache_conf.git
+                    dest: /repos/apache_conf
+
+          - name: Copiar configuracion de apache
+            shell: cp /repos/apache_conf/scatuaz.conf /etc/apache2/sites-available/
+            notify: Reiniciar apache
+
+          - name: Activar configuracion
+            shell: a2ensite scatuaz.conf
+
+  handlers:
+
+          - name: Reiniciar apache
+            service:
+                    name: apache2
+                    state: restarted

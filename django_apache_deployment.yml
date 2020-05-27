@@ -1,6 +1,6 @@
 ---
 - name: Despliegue de aplicacion Django con MariaDB
-  hosts: webserver
+  hosts: webserverdjango
   become: yes
   tasks:
           - name: Instalar paquetes con apt

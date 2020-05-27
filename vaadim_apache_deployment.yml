@@ -1,0 +1,52 @@
+---
+- name: Despliegue de aplicacion Vaadin con Tomcat8
+  hosts: webservervaadin
+  become: yes
+  tasks:
+          - name: Instalar paquetes con apt
+            apt:
+                    name:
+                            - tomcat8
+                            - maven
+                    update_cache: yes
+
+          - name: Clonar repositorio de proyecto
+            git:
+                    repo: https://github.com/vaadin/bookstore-example.git
+                    dest: /repos/bookstore
+                    force: yes
+
+          - name: Instala requerimientos de maven
+            shell:
+                    chdir: /repos/bookstore
+                    cmd: mvn install
+
+          - name: Enpaqueta el proyecto a un war
+            shell:
+                    chdir: /repos/bookstore
+                    cmd: mvn package
+
+          - name: Actualiza repositorios para instalar npm y nodejs
+            shell: curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+
+          - name: Instala paquetes extra con apt
+            apt:
+                    name: nodejs
+                    update_cache: yes
+
+          - name: Mueve el war a webapps
+            shell: cp /repos/bookstore/target/bookstore-example-1.0-SNAPSHOT.war /var/lib/tomcat8/webapps/bookstore.war
+            notify: Reiniciar tomcat
+
+          - name: Pone a tomcat8 como dueno del proyecto
+            shell: chown tomcat8 -R /repos/bookstore
+
+          - name: Pone a tomcat8 como dueno de webapps
+            shell: chown tomcat8 -R /var/lib/tomcat8
+
+  handlers:
+
+           - name: Reiniciar tomcat
+             service:
+                     name: tomcat8
+                     state: restarted

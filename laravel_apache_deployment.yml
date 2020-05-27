@@ -90,13 +90,13 @@
 
           - name: Concatena configuracion de apache a archivo de configuracion de apache
             shell: cat /repos/laravel-apache-conf/000-default.conf > /etc/apache2/sites-available/000-default.conf
-            notify: Reiniciar apache
 
           - name: Ejecutar a2enmod
             shell: a2enmod actions
 
           - name: Ejecutar a2enmod
             shell: a2enconf php-fpm
+            notify: Reiniciar apache
 
   handlers:
 

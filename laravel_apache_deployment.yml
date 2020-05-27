@@ -27,14 +27,18 @@
           - name: Instalar libreria de apache
             shell: dpkg -i /tmp/libapache2-mod-fastcgi_2.4.7~0910052141-1.2_amd64.deb
 
-          - name: Ejecutar a2enmod
-            shell: a2enmod actions
+          - name: Instala dependencia para el modulo mysql_db
+            pip:
+                    name: PyMySQL
+
+          - name: Clonar repo con configuracion para apache
+            git:
+                    repo: https://github.com/friedteeth/laravel-apache-conf.git
+                    dest: /repos/laravel-apache-conf
+                    force: yes
 
           - name: Configurar php con apache
             shell: cp /repos/laravel-apache-conf/php-fpm.conf /etc/apache2/conf-available/php-fpm.conf
-
-          - name: Ejecutar a2enmod
-            shell: a2enconf php-fpm
 
           - name: Clonar repositorio de proyecto a /var/www/html
             git:
@@ -42,20 +46,10 @@
                     dest: /var/www/html/doggos
                     force: yes
 
-          - name: Otorgar permisos a apache
+          - name: Configura el proyecto de laravel
             shell:
-                    cmd: chmod -R guo+w *
-                    chdir: /var/www/html/doggos/
-
-          - name: CLonar repo con configuracion para apache
-            git:
-                    repo: https://github.com/friedteeth/laravel-apache-conf.git
-                    dest: /repos/laravel-apache-conf
-                    force: yes
-
-          - name: Instala dependencia para el modulo mysql_db
-            pip:
-                    name: PyMySQL
+                    chdir: /var/www/html/doggos
+                    cmd: cp .env.example .env
 
           - name: Instala dependencias del proyecto usando composer
             composer:
@@ -77,12 +71,7 @@
           - name: Corre migraciones
             shell:
                     chdir: /var/www/html/doggos
-                    cmd: php artisan migrate
-
-          - name: Configura el proyecto de laravel
-            shell:
-                    chdir: /var/www/html/doggos
-                    cmd: cp .env.example .env
+                    cmd: php artisan migrate --force
 
           - name: Genera llave de acceso
             shell:
@@ -94,12 +83,20 @@
                     chdir: /var/www/html/doggos
                     cmd: php artisan config:cache
 
+          - name: Otorgar permisos a apache
+            shell:
+                    cmd: chmod -R guo+w *
+                    chdir: /var/www/html/doggos/
+
           - name: Concatena configuracion de apache a archivo de configuracion de apache
             shell: cat /repos/laravel-apache-conf/000-default.conf > /etc/apache2/sites-available/000-default.conf
             notify: Reiniciar apache
 
-          - name: Reinicia configuracion de a2enmod
-            shell: a2enmod rewrite
+          - name: Ejecutar a2enmod
+            shell: a2enmod actions
+
+          - name: Ejecutar a2enmod
+            shell: a2enconf php-fpm
 
   handlers:
 

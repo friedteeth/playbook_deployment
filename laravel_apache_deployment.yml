@@ -96,6 +96,9 @@
 
           - name: Ejecutar a2enmod
             shell: a2enconf php-fpm
+
+          - name: Ejecutar rewrite
+            shell: a2enmod rewrite
             notify: Reiniciar apache
 
   handlers:

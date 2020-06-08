@@ -4,13 +4,17 @@ pipeline{
 	    stage('Ejecucion de playbook de ansible'){
 			steps{
 			    sh "ansible-playbook /home/ubuntu/playbook_deployment/django_apache_deployment.yml -e hosts=127.0.0.1"
-				
+			}
+		}
+		stage('Activacion de entorno virtual'){
+			steps{
+				sh "source /envs/scatuaz/bin/activate"
 			}
 		}
 		stage('Verifiacion de codigo y complejidad'){
 			steps{
 				sh "flake8 --exclude=*migrations*,*settings* ."
-		                sh "flake8 --max-complexity=1 dinosaurios/archivo.py"		
+		        sh "flake8 --max-complexity=1 dinosaurios/archivo.py"		
 			}
 		}
 		stage('Testing'){

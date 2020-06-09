@@ -40,7 +40,7 @@
             mysql_user:
                     name: tigrito
                     password: tigrito123@
-                    priv: '*.*:ALL'
+                    priv: '*.*:ALL,GRANT'
                     login_unix_socket: /var/run/mysqld/mysqld.sock
             no_log: true
 

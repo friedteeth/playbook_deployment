@@ -16,9 +16,12 @@ pipeline{
 		}
 		stage('Testing'){
 			steps{
-				echo "Ejecución de pruebas unitarias"
-				echo "Ejecución de pruebas de aceptación"
-				echo "Verfica coverage"
+				sh """
+				. /envs/scatuaz/bin/activate
+				python manage.py test trabajador/tests
+				python manage.py test usuario/tests
+				python manage.py test login/tests
+				"""
 			}
 		}
 		

@@ -6,15 +6,12 @@ pipeline{
 			    sh "ansible-playbook /var/lib/jenkins/playbook_deployment/django_apache_deployment.yml -e 'ansible_python_interpreter=/usr/bin/python3'"
 			}
 		}
-		stage('Activacion de entorno virtual'){
+		stage('Verifica estandar de codigo y complejidad ciclomática'){
 			steps{
-				sh ". /envs/scatuaz/bin/activate"
-			}
-		}
-		stage('Verifiacion de codigo y complejidad'){
-			steps{
-				sh "flake8 --exclude=*migrations*,*settings* ."
-				sh "flake8 --max-complexity=1 dinosaurios/archivo.py"		
+				sh """
+				. /envs/scatuaz/bin/activate
+				flake8 --exclude=*migrations*,*settings* --max-complexity=1 /repos/scatuaz
+				"""
 			}
 		}
 		stage('Testing'){

@@ -3,12 +3,12 @@ pipeline{
 	stages{
 	    stage('Ejecucion de playbook de ansible'){
 			steps{
-			    	sh "ansible-playbook /var/lib/jenkins/playbook_deployment/django_apache_deployment.yml -e 'ansible_python_interpreter=/usr/bin/python3'"
+			    sh "ansible-playbook /var/lib/jenkins/playbook_deployment/django_apache_deployment.yml -e 'ansible_python_interpreter=/usr/bin/python3'"
 			}
 		}
 		stage('Activacion de entorno virtual'){
 			steps{
-				sh "source /envs/scatuaz/bin/activate"
+				sh ". /envs/scatuaz/bin/activate"
 			}
 		}
 		stage('Verifiacion de codigo y complejidad'){

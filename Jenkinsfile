@@ -3,7 +3,7 @@ pipeline{
 	stages{
 	    stage('Ejecucion de playbook de ansible'){
 			steps{
-			    	sh "ansible-playbook /var/lib/jenkins/playbook_deployment/django_apache_deployment.yml -e hosts='[127.0.0.1]'"
+			    	sh "ansible-playbook /var/lib/jenkins/playbook_deployment/django_apache_deployment.yml"
 			}
 		}
 		stage('Activacion de entorno virtual'){

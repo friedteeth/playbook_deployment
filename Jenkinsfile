@@ -18,9 +18,9 @@ pipeline{
 			steps{
 				sh """
 				. /envs/scatuaz/bin/activate
-				python manage.py test trabajador/tests
-				python manage.py test usuario/tests
-				python manage.py test login/tests
+				python /repos/scatuaz/manage.py test /repos/scatuaz/trabajador/tests
+				python /repos/scatuaz/manage.py test /repos/scatuaz/usuario/tests
+				python /repos/scatuaz/manage.py test /repos/scatuaz/login/tests
 				"""
 			}
 		}

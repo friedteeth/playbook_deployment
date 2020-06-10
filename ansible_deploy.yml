@@ -44,7 +44,6 @@
     git:
       repo: https://gitlab.com/friedswet/scatuaz.git
       dest: /var/lib/jenkins/scatuaz
-      force: yes
 
   - name: Crea entorno virtual e instala requerimientos
     pip:
@@ -55,7 +54,6 @@
     mysql_db:
       name: scatuaz
       login_unix_socket: /var/run/mysqld/mysqld.sock
-    become: yes
 
   - name: Crea usuario de mysql y otorga permisos para base de datos
     mysql_user:
@@ -63,13 +61,11 @@
       password: tigrito123@
       priv: '*.*:ALL'
       login_unix_socket: /var/run/mysqld/mysqld.sock
-    become: yes
 
   - name: Convierte manage.py en ejecutable
     file:
       path: /var/lib/jenkins/scatuaz/manage.py
       mode: 0777
-    become: yes
 
   - name: Corre migraciones de Django app
     django_manage:

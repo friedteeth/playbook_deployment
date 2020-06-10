@@ -19,7 +19,8 @@ pipeline{
 				sh """
 				. /envs/scatuaz/bin/activate
 				cd /repos/scatuaz/
-				sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test
+				whoami
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test
 				echo HOLACOMOESTAS
 				coverage report
 				"""

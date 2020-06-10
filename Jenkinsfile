@@ -18,10 +18,9 @@ pipeline{
 			steps{
 				sh """
 				. /envs/scatuaz/bin/activate
-				cd /repos/scatuaz
 				coverage erase
-				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test usuario/tests
-				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test login/tests
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test /envs/scatuaz/usuario/tests
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test /envs/scatuaz/login/tests
 				coverage report
 				"""
 			}

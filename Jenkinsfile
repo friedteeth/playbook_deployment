@@ -14,50 +14,19 @@ pipeline{
 				"""
 			}
 		}
-		stage('Pruebas unitarias'){
-			steps{
-				sh """
-				. /envs/scatuaz/bin/activate
-				python /repos/scatuaz/manage.py test /repos/scatuaz/trabajador/tests
-				python /repos/scatuaz/manage.py test /repos/scatuaz/usuario/tests
-				python /repos/scatuaz/manage.py test /repos/scatuaz/login/tests
-				
-				"""
-			}
-		}
-		stage('Pruebas de coverage para modulo trabajador'){
+		stage('Pruebas unitarias y coverage'){
 			steps{
 				sh """
 				. /envs/scatuaz/bin/activate
 				cd /repos/scatuaz
 				coverage erase
 				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test trabajador/tests
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test usuario/tests
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test login/tests
 				coverage report
 				"""
 			}
 		}
-		// stage('Pruebas de coverage para modulo usuario'){
-		// 	steps{
-		// 		sh """
-		// 		. /envs/scatuaz/bin/activate
-		// 		cd /repos/scatuaz
-		// 		coverage erase
-		// 		coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test usuario/tests
-		// 		coverage report
-		// 		"""
-		// 	}
-		// }
-		// stage('Pruebas de coverage para modulo login'){
-		// 	steps{
-		// 		sh """
-		// 		. /envs/scatuaz/bin/activate
-		// 		cd /repos/scatuaz
-		// 		coverage erase
-		// 		coverage run -a --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test login/tests
-		// 		coverage report
-		// 		"""
-		// 	}
-		// }
 		stage('Pruebas de aceptacion'){
 			steps{
 				sh """

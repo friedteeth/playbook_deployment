@@ -11,7 +11,7 @@ pipeline{
 				sh """
 				. /var/lib/jenkins/env/bin/activate
 				cd /var/lib/jenkins/scatuaz
-				flake8 --exclude=*migrations*,*settings*,*pruebas_aceptacion* --max-complexity=5 .
+				flake8 --exclude=*migrations*,*settings*,*pruebas_aceptacion*,*test* --max-complexity=5 .
 				"""
 			}
 		}

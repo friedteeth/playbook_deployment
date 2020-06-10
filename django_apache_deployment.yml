@@ -18,7 +18,7 @@
 
           - name: Clonar repositorio de proyecto
             git:
-                    repo: https://github.com/friedswet/scatuaz.git
+                    repo: https://gitlab.com/friedswet/scatuaz.git
                     dest: /repos/scatuaz
                     force: yes
 

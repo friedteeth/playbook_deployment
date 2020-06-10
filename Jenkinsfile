@@ -43,7 +43,11 @@ pipeline{
 		}
 		stage('Servidor de producción'){
 			steps{
-				echo "Copia la aplicación al servidor de pruebas"
+				sh """
+				cd /var/lib/jenkins/
+				git clone https://github.com/friedteeth/playbook_deployment.git playbooks
+				ansible-playbook /var/lib/jenkins/playbooks/django_apache_deployment.yml -e 'ansible_user=ubuntu','ansible_host=18.225.32.191'
+				"""
 			}
 		}
 	}

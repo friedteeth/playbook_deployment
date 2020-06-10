@@ -45,6 +45,7 @@ pipeline{
 			steps{
 				sh """
 				cd /var/lib/jenkins/
+				rm -rf playbooks
 				git clone https://github.com/friedteeth/playbook_deployment.git playbooks
 				ansible-playbook /var/lib/jenkins/playbooks/django_apache_deployment.yml -e \"ansible_user=ubuntu ansible_host=18.225.32.191\"
 				"""

@@ -2,10 +2,10 @@
 
 - name: Instala paquetes y dependencias de ansible
   hosts: jenkins
-  become: yes
   tasks:
   - name: Se instala paquetes
     apt:
+    become: yes
       name:
           - software-properties-common
           - apache2
@@ -33,6 +33,7 @@
 
   - name: Se instala ansible
     apt:
+    become: yes
       name: ansible
 
   - name: Instala dependencia para el modulo mysql_db
@@ -42,21 +43,23 @@
   - name: Clonar repositorio de proyecto
     git:
       repo: https://gitlab.com/friedswet/scatuaz.git
-      dest: /repos/scatuaz
+      dest: /var/lib/jenkins/scatuaz
       force: yes
 
   - name: Crea entorno virtual e instala requerimientos
     pip:
-      requirements: /repos/scatuaz/requirements.txt
-      virtualenv: /envs/scatuaz
+      requirements: /var/lib/jenkins/scatuaz/requirements.txt
+      virtualenv: /var/lib/jenkins/env
 
   - name: Crea base de datos
     mysql_db:
+    become: yes
       name: scatuaz
       login_unix_socket: /var/run/mysqld/mysqld.sock
 
   - name: Crea usuario de mysql y otorga permisos para base de datos
     mysql_user:
+    become: yes
       name: tigrito
       password: tigrito123@
       priv: '*.*:ALL'
@@ -64,14 +67,15 @@
 
   - name: Convierte manage.py en ejecutable
     file:
-      path: /repos/scatuaz/manage.py
+    become: yes
+      path: /var/lib/jenkins/scatuaz/manage.py
       mode: 0777
 
   - name: Corre migraciones de Django app
     django_manage:
       command: migrate
-      app_path: /repos/scatuaz
-      virtualenv: /envs/scatuaz
+      app_path: /var/lib/jenkins/scatuaz
+      virtualenv: /var/lib/jenkins/env
 
   - name: Copiar configuracion de apache
-    shell: cp /repos/scatuaz/pruebas_aceptacion/features/.chrome.py /repos/scatuaz/pruebas_aceptacion/features/environment.py
+    shell: cp /var/lib/jenkins/scatuaz/pruebas_aceptacion/features/.chrome.py /var/lib/jenkins/scatuaz/pruebas_aceptacion/features/environment.py

@@ -9,35 +9,29 @@ pipeline{
 		stage('Verifica estandar de codigo y complejidad ciclomática'){
 			steps{
 				sh """
-				. /var/lib/jenkins/env/bin/activate
-				cd /var/lib/jenkins/scatuaz
+				. /envs/scatuaz/bin/activate
 				flake8 --exclude=*migrations*,*settings*,*pruebas_aceptacion* --max-complexity=5 .
 				"""
 			}
 		}
 		stage('Pruebas unitarias y coverage'){
 			steps{
-				sh """
-				. /var/lib/jenkins/env/bin/activate
-				cd /var/lib/jenkins/scatuaz
-				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test"
-				coverage report
-				"""
+				sh ". /envs/scatuaz/bin/activate sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* /repos/scatuaz/manage.py test"
+				sh ". /envs/scatuaz/bin/activate sudo coverage report"
 			}
 		}
 		stage('Pruebas de aceptacion'){
 			steps{
 				sh """
-				. /var/lib/jenkins/env/bin/activate
-				cd /var/lib/jenkins/scatuaz
-				python manage.py runserver 0:8000 &> /dev/null &
+				. /envs/scatuaz/bin/activate
+				cd /repos/scatuaz/pruebas_aceptacion/
+				python /repos/scatuaz/manage.py runserver 0:8000 &> /dev/null &
 				sudo echo \$! >> my_process.log
-				Xvfb :0 &> /dev/null &
+				Xvfb :0 >& /dev/null &
 				echo \$! >> my_process.log
 				export DISPLAY=:0
-				cd /var/lib/jenkins/scatuaz/pruebas_aceptacion
 				behave
-				kill \$(cat /var/lib/jenkins/scatuaz/my_process.log)
+				kill \$(cat my_process.log)
 				"""
 			}
 		}

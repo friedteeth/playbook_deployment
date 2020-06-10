@@ -10,7 +10,7 @@ pipeline{
 			steps{
 				sh """
 				. /envs/scatuaz/bin/activate
-				flake8 --exclude=*migrations*,*settings*,*pruebas_aceptacion* --max-complexity=5 .
+				flake8 --exclude=*migrations*,*settings*,*pruebas_aceptacion*,*test* --max-complexity=5 .
 				"""
 			}
 		}

@@ -14,20 +14,41 @@ pipeline{
 				"""
 			}
 		}
-		stage('Testing'){
+		stage('Pruebas unitarias'){
 			steps{
 				sh """
 				. /envs/scatuaz/bin/activate
 				python /repos/scatuaz/manage.py test /repos/scatuaz/trabajador/tests
 				python /repos/scatuaz/manage.py test /repos/scatuaz/usuario/tests
 				python /repos/scatuaz/manage.py test /repos/scatuaz/login/tests
+				
 				"""
 			}
 		}
-		
-		stage('Servidor de pre-producción'){
+		stage('Pruebas de coverage'){
 			steps{
-				echo "Copia la aplicación al servidor de pruebas"
+				sh """
+				. /envs/scatuaz/bin/activate
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test trabajador\tests
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test usuario\tests
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test login\tests
+				coverage report
+				"""
+			}
+		}
+		stage('Pruebas de aceptacion'){
+			steps{
+				sh """
+				. /envs/scatuaz/bin/activate
+				mv /repos/scatuaz/pruebas_aceptacion/features/environment.py /repos/scatuaz/pruebas_aceptacion/features/.firefox_environment.py
+				mv /repos/scatuaz/pruebas_aceptacion/features/.chrome_headless_environment.py /repos/scatuaz/pruebas_aceptacion/features/environment.py
+				python manage.py runserver 0:8000 >& /dev/null &
+				Xvfb :0 >& /dev/null &
+				export DISPLAY=:0
+				cd /repos/scatuaz/pruebas_aceptacion/
+
+				behave
+				"""
 			}
 		}
 		stage('Servidor de producción'){

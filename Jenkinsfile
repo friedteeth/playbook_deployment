@@ -17,9 +17,7 @@ pipeline{
 		stage('Pruebas unitarias y coverage'){
 			steps{
 				sh """
-				. /envs/scatuaz/bin/activate
-				cd /repos/scatuaz
-				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test
+				. /envs/scatuaz/bin/activate sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* /repos/scatuaz/manage.py test
 				coverage report
 				"""
 			}

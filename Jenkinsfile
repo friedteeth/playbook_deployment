@@ -18,9 +18,8 @@ pipeline{
 			steps{
 				sh """
 				. /envs/scatuaz/bin/activate
-				coverage erase
 				cd /repos/scatuaz/
-				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test
+				sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test
 				echo HOLACOMOESTAS
 				coverage report
 				"""

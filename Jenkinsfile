@@ -27,13 +27,13 @@ pipeline{
 				sh """
 				. /envs/scatuaz/bin/activate
 				python /repos/scatuaz/manage.py runserver 0:8000 >& /dev/null &
-				echo $! >> my_process.log
+				echo \$! >> my_process.log
 				Xvfb :0 >& /dev/null &
-				echo $! >> my_process.log
+				echo \$! >> my_process.log
 				export DISPLAY=:0
 				cd /repos/scatuaz/pruebas_aceptacion/
 				behave
-				kill $(cat my_process.log)
+				kill \$(cat my_process.log)
 				"""
 			}
 		}

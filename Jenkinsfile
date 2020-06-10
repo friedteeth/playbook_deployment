@@ -16,7 +16,7 @@ pipeline{
 		}
 		stage('Pruebas unitarias y coverage'){
 			steps{
-				sh ". /home/ubuntu/scatuaz/env_scatuaz/bin/activate sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test"
+				sh ". /envs/scatuaz/bin/activate sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test"
 			}
 		}
 		stage('Pruebas de aceptacion'){

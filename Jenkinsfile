@@ -20,7 +20,7 @@ pipeline{
 				sh """
 				. /var/lib/jenkins/env/bin/activate
 				cd /var/lib/jenkins/scatuaz
-				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test"
+				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test
 				coverage report
 				"""
 			}

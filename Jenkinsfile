@@ -16,7 +16,10 @@ pipeline{
 		}
 		stage('Pruebas unitarias y coverage'){
 			steps{
-				sh ". /envs/scatuaz/bin/activate sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test"
+				sh """
+				. /envs/scatuaz/bin/activate
+				sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test
+				"""
 			}
 		}
 		stage('Pruebas de aceptacion'){
@@ -26,10 +29,13 @@ pipeline{
 				sudo mv /repos/scatuaz/pruebas_aceptacion/features/environment.py /repos/scatuaz/pruebas_aceptacion/features/.firefox_environment.py
 				sudo mv /repos/scatuaz/pruebas_aceptacion/features/.chrome_headless_environment.py /repos/scatuaz/pruebas_aceptacion/features/environment.py
 				python /repos/scatuaz/manage.py runserver 0:8000 >& /dev/null &
+				echo $! >> my_process.log
 				Xvfb :0 >& /dev/null &
+				echo $! >> my_process.log
 				export DISPLAY=:0
 				cd /repos/scatuaz/pruebas_aceptacion/
 				behave
+				kill $(cat my_process.log)
 				"""
 			}
 		}

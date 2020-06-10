@@ -34,8 +34,8 @@ pipeline{
 				coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* manage.py test trabajador/tests
 				coverage report
 				"""
+			}
 		}
-		// }
 		// stage('Pruebas de coverage para modulo usuario'){
 		// 	steps{
 		// 		sh """

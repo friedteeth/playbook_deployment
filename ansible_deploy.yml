@@ -1,0 +1,74 @@
+---
+
+- name: Instala paquetes y dependencias de ansible
+  hosts: jenkins
+  become: yes
+  tasks:
+  - name: Se instala paquetes
+    apt:
+      name:
+          - software-properties-common
+          - apache2
+          - mysql-server
+          - xvfb
+          - python3-pip
+          - build-essential
+          - python3-dev
+          - python3-setuptools
+          - python3-wheel
+          - python3-cffi
+          - libcairo2
+          - libpango-1.0-0
+          - libpangocairo-1.0-0
+          - libgdk-pixbuf2.0-0
+          - libffi-dev
+          - shared-mime-info
+          - libmysqlclient-dev
+          - virtualenv
+      update_cache: yes
+
+  - name: Se agrega el repo de ansible
+    apt_repository:
+      repo: ppa:ansible/ansible
+
+  - name: Se instala ansible
+    apt:
+      name: ansible
+
+  - name: Instala dependencia para el modulo mysql_db
+    pip:
+      name: PyMySQL
+
+  - name: Clonar repositorio de proyecto
+    git:
+      repo: https://github.com/friedswet/scatuaz.git
+      dest: /repos/scatuaz
+      force: yes
+
+  - name: Crea entorno virtual e instala requerimientos
+    pip:
+      requirements: /repos/scatuaz/requirements.txt
+      virtualenv: /envs/scatuaz
+
+  - name: Crea base de datos
+    mysql_db:
+      name: scatuaz
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+
+  - name: Crea usuario de mysql y otorga permisos para base de datos
+    mysql_user:
+      name: tigrito
+      password: tigrito123@
+      priv: '*.*:ALL'
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+
+  - name: Convierte manage.py en ejecutable
+    file:
+      path: /repos/scatuaz/manage.py
+      mode: 0777
+
+  - name: Corre migraciones de Django app
+    django_manage:
+      command: migrate
+      app_path: /repos/scatuaz
+      virtualenv: /envs/scatuaz

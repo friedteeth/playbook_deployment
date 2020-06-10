@@ -37,7 +37,7 @@ pipeline{
 				export DISPLAY=:0
 				cd /var/lib/jenkins/scatuaz/pruebas_aceptacion
 				behave
-				kill \\${cat /var/lib/jenkins/scatuaz/my_process.log}
+				kill ${jobs -p}
 				"""
 			}
 		}

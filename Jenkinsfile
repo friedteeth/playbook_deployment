@@ -1,9 +1,9 @@
 pipeline{
 	agent any
 	stages{
-	    stage('Ejecucion de playbook de ansible'){
+	    stage('Preparacion de sistema'){
 			steps{
-			    sh "ansible-playbook /var/lib/jenkins/playbook_deployment/django_apache_deployment.yml -e 'ansible_python_interpreter=/usr/bin/python3'"
+			    echo "Proyecto instalado"
 			}
 		}
 		stage('Verifica estandar de codigo y complejidad ciclomática'){

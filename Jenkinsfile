@@ -27,7 +27,7 @@ pipeline{
 		}
 		stage('Pruebas de aceptacion'){
 			steps{
-				sh """
+				sh '''
 				. /var/lib/jenkins/env/bin/activate
 				cd /var/lib/jenkins/scatuaz
 				python manage.py runserver 0:8000 &> /dev/null &
@@ -38,7 +38,7 @@ pipeline{
 				cd /var/lib/jenkins/scatuaz/pruebas_aceptacion
 				behave
 				kill \${cat /var/lib/jenkins/scatuaz/my_process.log}
-				"""
+				'''
 			}
 		}
 		stage('Servidor de producción'){

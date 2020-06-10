@@ -72,3 +72,6 @@
       command: migrate
       app_path: /repos/scatuaz
       virtualenv: /envs/scatuaz
+
+  - name: Copiar configuracion de apache
+    shell: cp /repos/scatuaz/pruebas_aceptacion/features/.chrome.py /repos/scatuaz/pruebas_aceptacion/features/environment.py

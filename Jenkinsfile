@@ -57,7 +57,7 @@ pipeline{
 				cd /var/lib/jenkins/
 				rm -rf playbooks
 				git clone https://github.com/friedteeth/playbook_deployment.git playbooks
-				ansible-playbook /var/lib/jenkins/playbooks/django_apache_deployment.yml
+				ansible-playbook /var/lib/jenkins/playbooks/django_apache_deployment_production.yml
 				'''
 			}
 		}

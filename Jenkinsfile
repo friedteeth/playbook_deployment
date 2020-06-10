@@ -18,6 +18,7 @@ pipeline{
 			steps{
 				sh """
 				. /envs/scatuaz/bin/activate sudo coverage run --source='.' --omit=*migrations*,*__init__*,*test*,*apps* /repos/scatuaz/manage.py test
+				cd /repos/scatuaz/
 				coverage report
 				"""
 			}

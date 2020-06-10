@@ -23,13 +23,12 @@ pipeline{
 			steps{
 				sh """
 				. /envs/scatuaz/bin/activate
-				mv /repos/scatuaz/pruebas_aceptacion/features/environment.py /repos/scatuaz/pruebas_aceptacion/features/.firefox_environment.py
-				mv /repos/scatuaz/pruebas_aceptacion/features/.chrome_headless_environment.py /repos/scatuaz/pruebas_aceptacion/features/environment.py
+				sudo mv /repos/scatuaz/pruebas_aceptacion/features/environment.py /repos/scatuaz/pruebas_aceptacion/features/.firefox_environment.py
+				sudo mv /repos/scatuaz/pruebas_aceptacion/features/.chrome_headless_environment.py /repos/scatuaz/pruebas_aceptacion/features/environment.py
 				python manage.py runserver 0:8000 >& /dev/null &
 				Xvfb :0 >& /dev/null &
 				export DISPLAY=:0
 				cd /repos/scatuaz/pruebas_aceptacion/
-
 				behave
 				"""
 			}
